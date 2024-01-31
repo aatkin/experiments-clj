@@ -1,5 +1,5 @@
 ^{:nextjournal.clerk/visibility {:code :hide}}
-(ns contrast-ratio
+(ns experiments.contrast-ratio
   (:require [clojure.math]
             [garden.color :as c]
             [nextjournal.clerk :as clerk]))
@@ -101,13 +101,13 @@
 ;; (L1 + 0.05) / (L2 + 0.05)
 
 ^{::clerk/visibility {:result :hide}}
-(defn contrast-ratio [color color-dark]
+(defn get-contrast-ratio [color color-dark]
   (let [L1 (relative-luminance color)
         L2 (relative-luminance color-dark)]
     (/ (+ L1 0.05)
        (+ L2 0.05))))
 
-(list (contrast-ratio (c/hex->rgb "#FFFFFF") (c/hex->rgb "#000000")) ; white-black 
-      (contrast-ratio (c/hex->rgb "#FFFFFF") (c/hex->rgb "#6056EB")) ; white-primary
-      (contrast-ratio (c/hex->rgb "#6056EB") (c/hex->rgb "#000000")) ; primary-black
+(list (get-contrast-ratio (c/hex->rgb "#FFFFFF") (c/hex->rgb "#000000")) ; white-black 
+      (get-contrast-ratio (c/hex->rgb "#FFFFFF") (c/hex->rgb "#6056EB")) ; white-primary
+      (get-contrast-ratio (c/hex->rgb "#6056EB") (c/hex->rgb "#000000")) ; primary-black
       )
