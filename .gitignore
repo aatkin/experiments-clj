@@ -1,0 +1,12 @@
+.calva/
+.clj-kondo/
+.cpcache/
+.lsp/
+.nrepl-port
+.vscode/
+.DS_Store
+.clerk/
+
+node_modules
+
+public/build

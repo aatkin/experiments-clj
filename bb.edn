@@ -1,0 +1,3 @@
+{:tasks
+ {dev {:doc "Start with dev tooling"
+       :task (apply clojure "-M:dev:test:nrepl" *command-line-args*)}}}

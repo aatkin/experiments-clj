@@ -1,0 +1,18 @@
+{:paths ["notebooks" "datasets"]
+ :deps {dev.weavejester/medley {:mvn/version "1.7.0"}
+        garden/garden {:mvn/version "1.3.10"}
+        io.github.nextjournal/clerk {:mvn/version "0.15.957"}
+        org.babashka/cli {:mvn/version "0.8.55"}}
+ :aliases
+ {:nrepl {:extra-deps {nrepl/nrepl {:mvn/version "1.1.0"}
+                       cider/cider-nrepl {:mvn/version "0.45.0"}}
+          ;; https://clojure.org/reference/repl_and_main
+          :main-opts ["-m" "nrepl.cmdline" ; namespace to find a -main function for execution
+                      "--middleware" "[cider.nrepl/cider-middleware]"]}
+  :dev {:extra-paths ["dev"]
+        :extra-deps {org.clojure/clojure {:mvn/version "1.11.1"}
+                     org.clojure/tools.namespace {:mvn/version "1.4.5"}}}
+  :nextjournal/clerk {:exec-fn nextjournal.clerk/build!
+                      ;; notebooks to be built, accepts globs patterns
+                      :exec-args {:paths ["notebooks/generate_color_palette.clj"]}
+                      :main-opts ["-m" "babashka.cli.exec"]}}}
