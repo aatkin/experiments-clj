@@ -1,13 +1,11 @@
-^{:nextjournal.clerk/visibility {:code :hide}}
 (ns experiments.generate-color-palette
+  {:nextjournal.clerk/visibility {:code :hide
+                                  :result :hide}}
   (:require [clojure.math]
             [garden.color :as c]
             [garden.arithmetic :as a]
             [nextjournal.clerk :as clerk]
             [experiments.contrast-ratio :refer [get-contrast-ratio]]))
-
-{::clerk/visibility {:code :hide
-                     :result :hide}}
 
 (defn round-double [d & [precision]]
   (->> (to-array [d])
@@ -69,42 +67,50 @@
        (contrast-check (:hex lightest) (get-contrast-ratio (:color lightest) color))
        (contrast-check white (get-contrast-ratio white color))])))
 
-(defn color-testing-component [color]
-  (let [theme {:color-primary ["#338593" "#006778"]
-               :color-secondary ["#9c3374" "#830051"]
-               :color-tertiary ["#7e888d" "#5e6a71"]
-               :color-accent ["#33d2c1" "#00c7b2"]
-               :color-info ["#339bc9" "#0082bb"]
-               :color-link ["#33597f" "#002f5f"]
-               :color-success ["#74b939" "#51a808"]
-               :color-warning ["#ff7933" "#ff5800"]
-               :color-error ["#c73954" "#b90729"]}
-        color-shades (apply generate-color-shades (get theme color))
-        lightest (first color-shades)
-        darkest (last color-shades)]
-    [:div
-     [:p.lead (str color "-{shade}")]
-     [:div.flex.gap-2
-      (into [:<>]
-            (for [{:keys [light dark hex] :as shade} color-shades]
-              [:div.flex.flex-col.gap-1
-               [:div.flex.items-center.justify-center.rounded.w-16.h-10
-                {:style {:background-color hex
-                         :color (if light
-                                  (:hex darkest)
-                                  (:hex lightest))}}
-                [:small.font-sans ; shade number
-                 (or light dark)]]
-               [:small.font-mono hex]
-               (render-contrast-checks shade lightest darkest)]))]]))
+(defn color-testing-component [theme]
+  (into [:<>]
+        (for [[color shades] theme
+              :let [color-shades (apply generate-color-shades shades)
+                    lightest (first color-shades)
+                    darkest (last color-shades)]]
+          [:div
+           [:p.lead (str color "-{shade}")]
+           (into [:div.flex.gap-2]
+                 (for [{:keys [light dark hex] :as shade} color-shades]
+                   [:div.flex.flex-col.gap-1
+                    [:div.flex.items-center.justify-center.rounded.w-16.h-10
+                     {:style {:background-color hex
+                              :color (if light
+                                       (:hex darkest)
+                                       (:hex lightest))}}
+                     [:small.font-sans ; shade number
+                      (or light dark)]]
+                    [:small.font-mono hex]
+                    (render-contrast-checks shade lightest darkest)]))
+           (into [:pre.css-styles]
+                 (-> (for [{:keys [light dark hex] :as shade} color-shades]
+                       [:<> (str "--" (name color) "-" (or light dark) ": " hex ";")])
+                     (interleave (repeat [:br]))))])))
+
+(def theme
+  {:color-primary ["#338593" "#006778"]
+   :color-secondary ["#9c3374" "#830051"]
+   :color-tertiary ["#7e888d" "#5e6a71"]
+   :color-accent ["#33d2c1" "#00c7b2"]
+   :color-info ["#339bc9" "#0082bb"]
+   :color-link ["#33597f" "#002f5f"]
+   :color-success ["#74b939" "#51a808"]
+   :color-warning ["#ff7933" "#ff5800"]
+   :color-error ["#c73954" "#b90729"]})
+
+^{:nextjournal.clerk/visibility {:result :show}}
+(clerk/table
+ {:head ["Palette" "Light color" "Dark color"]
+  :rows (for [[k values] theme]
+          (cons k values))})
 
 ^{::clerk/visibility {:result :show}
   ::clerk/width :full}
 (clerk/html
  [:div.flex.flex-col.items-center.overflow-hidden
-  (color-testing-component :color-primary)
-  (color-testing-component :color-secondary)
-  (color-testing-component :color-tertiary)
-  (color-testing-component :color-success)
-  (color-testing-component :color-warning)
-  (color-testing-component :color-error)])
+  (color-testing-component theme)])
