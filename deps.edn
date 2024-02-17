@@ -14,5 +14,5 @@
                      org.clojure/tools.namespace {:mvn/version "1.4.5"}}}
   :nextjournal/clerk {:exec-fn nextjournal.clerk/build!
                       ;; notebooks to be built, accepts globs patterns
-                      :exec-args {:paths ["notebooks/generate_color_palette.clj"]}
+                      :exec-args {:paths ["notebooks/experiments/*"]}
                       :main-opts ["-m" "babashka.cli.exec"]}}}
